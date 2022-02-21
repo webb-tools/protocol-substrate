@@ -1,5 +1,5 @@
 use super::{
-	mock::{parachain::*, *},
+	mock::{parachain::*, test_utils::*, *},
 	*,
 };
 use ark_bn254::Fr as Bn254Fr;
@@ -7,10 +7,11 @@ use arkworks_utils::utils::common::{setup_params_x5_3, setup_params_x5_4, Curve}
 use codec::Encode;
 use frame_benchmarking::account;
 use frame_support::{assert_err, assert_ok, traits::OnInitialize};
-use pallet_anchor::BalanceOf;
+use pallet_anchor::{truncate_and_pad, BalanceOf};
 use pallet_democracy::{AccountVote, Conviction, Vote};
-use std::{convert::TryInto, path::Path};
-use webb_primitives::utils::derive_resource_id;
+use webb_primitives::{
+	linkable_tree::LinkableTreeInspector, merkle_tree::TreeInspector, utils::derive_resource_id,
+};
 use xcm_simulator::TestExt;
 
 const SEED: u32 = 0;
@@ -54,6 +55,46 @@ fn setup_environment(curve: Curve) -> Vec<u8> {
 			] {
 				assert_ok!(Balances::set_balance(Origin::root(), account_id, 100_000_000, 0));
 			}
+
+			// finally return the provingkey bytes
+			pk_bytes.to_vec()
+		},
+		Curve::Bls381 => {
+			unimplemented!()
+		},
+	}
+}
+
+fn setup_environment_withdraw(curve: Curve) -> Vec<u8> {
+	for account_id in [
+		account::<AccountId>("", 1, SEED),
+		account::<AccountId>("", 2, SEED),
+		account::<AccountId>("", 3, SEED),
+		account::<AccountId>("", 4, SEED),
+		account::<AccountId>("", 5, SEED),
+		account::<AccountId>("", 6, SEED),
+	] {
+		assert_ok!(Balances::set_balance(Origin::root(), account_id, 100_000_000, 0));
+	}
+
+	match curve {
+		Curve::Bn254 => {
+			let params3 = setup_params_x5_3::<Bn254Fr>(curve);
+
+			// 1. Setup The Hasher Pallet.
+			assert_ok!(HasherPallet::force_set_parameters(Origin::root(), params3.to_bytes()));
+			// 2. Initialize MerkleTree pallet.
+			<MerkleTree as OnInitialize<u64>>::on_initialize(1);
+			// 3. Setup the VerifierPallet
+			//    but to do so, we need to have a VerifyingKey
+			let pk_bytes = include_bytes!(
+				"../../../protocol-substrate-fixtures/fixed-anchor/bn254/x5/proving_key_uncompressed.bin"
+			);
+			let vk_bytes = include_bytes!(
+				"../../../protocol-substrate-fixtures/fixed-anchor/bn254/x5/verifying_key.bin"
+			);
+
+			assert_ok!(VerifierPallet::force_set_parameters(Origin::root(), vk_bytes.to_vec()));
 
 			// finally return the provingkey bytes
 			pk_bytes.to_vec()
@@ -243,14 +284,16 @@ fn should_bridge_anchors_using_xcm() {
 	});
 
 	ParaA::execute_with(|| {
-		let converted_chain_id_bytes = chain_id_to_bytes::<Runtime, _>(u64::from(PARAID_B));
-		let r_id = derive_resource_id(converted_chain_id_bytes, &para_a_tree_id.encode());
+		let converted_chain_id =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_B));
+		let r_id = derive_resource_id(converted_chain_id, &para_a_tree_id.encode());
 		assert_ok!(XAnchor::force_register_resource_id(Origin::root(), r_id, para_b_tree_id));
 	});
 
 	ParaB::execute_with(|| {
-		let converted_chain_id_bytes = chain_id_to_bytes::<Runtime, _>(u64::from(PARAID_A));
-		let r_id = derive_resource_id(converted_chain_id_bytes, &para_b_tree_id.encode());
+		let converted_chain_id =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_A));
+		let r_id = derive_resource_id(converted_chain_id, &para_b_tree_id.encode());
 		assert_ok!(XAnchor::force_register_resource_id(Origin::root(), r_id, para_a_tree_id));
 	});
 
@@ -282,7 +325,8 @@ fn should_bridge_anchors_using_xcm() {
 	// we should expect that the edge for ParaA is there, and the merkle root equal
 	// to the one we got from ParaA.
 	ParaB::execute_with(|| {
-		let converted_chain_id_bytes = chain_id_to_bytes::<Runtime, _>(u64::from(PARAID_A));
+		let converted_chain_id_bytes =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_A));
 		dbg!(converted_chain_id_bytes);
 		let edge = LinkableTree::edge_list(&para_b_tree_id, converted_chain_id_bytes);
 		assert_eq!(edge.root, para_a_root);
@@ -409,7 +453,8 @@ fn governance_system_works() {
 		// create a link proposal, saying that we (parachain A) want to link the anchor
 		// (local_tree_id) to the anchor (target_tree_id) located on Parachain B
 		// (target_chain_id).
-		let converted_chain_id_bytes = chain_id_to_bytes::<Runtime, _>(u64::from(PARAID_B));
+		let converted_chain_id_bytes =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_B));
 		let payload = LinkProposal {
 			target_chain_id: converted_chain_id_bytes,
 			target_tree_id: Some(para_b_tree_id),
@@ -447,7 +492,8 @@ fn governance_system_works() {
 	// now we do the on-chain proposal checking on chain B.
 	ParaB::execute_with(|| {
 		// we should see the anchor in the pending list.
-		let converted_chain_id_bytes = chain_id_to_bytes::<Runtime, _>(u64::from(PARAID_A));
+		let converted_chain_id_bytes =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_A));
 		dbg!(converted_chain_id_bytes);
 		assert_eq!(
 			XAnchor::pending_linked_anchors(converted_chain_id_bytes, para_b_tree_id),
@@ -795,5 +841,134 @@ fn should_fail_to_call_update_as_signed_account() {
 			XAnchor::update(Origin::signed(AccountThree::get()), r_id, edge_metadata),
 			frame_support::error::BadOrigin,
 		);
+	});
+}
+
+#[test]
+fn test_cross_chain_withdrawal() {
+	MockNet::reset();
+	let mut para_a_tree_id = 0;
+	let mut para_b_tree_id = 0;
+
+	let mut src_chain_id_a = 0;
+	let mut src_chain_id_b = 0;
+
+	let mut pk_bytes = Vec::new();
+	let sender_account_id = parachain::AccountOne::get();
+
+	let curve = Curve::Bn254;
+
+	ParaA::execute_with(|| {
+		pk_bytes = setup_environment_withdraw(curve);
+		let max_edges = 2;
+		let depth = TREE_DEPTH as u8;
+		let asset_id = 0;
+		assert_ok!(Anchor::create(Origin::root(), DEPOSIT_SIZE, max_edges, depth, asset_id));
+		para_a_tree_id = MerkleTree::next_tree_id() - 1;
+	});
+
+	ParaB::execute_with(|| {
+		setup_environment_withdraw(curve);
+		let max_edges = 2;
+		let depth = TREE_DEPTH as u8;
+		let asset_id = 0;
+		assert_ok!(Anchor::create(Origin::root(), DEPOSIT_SIZE, max_edges, depth, asset_id));
+		para_b_tree_id = MerkleTree::next_tree_id() - 1;
+	});
+
+	ParaA::execute_with(|| {
+		dbg!(para_a_tree_id);
+		dbg!(para_b_tree_id);
+		let converted_chain_id_bytes =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_B));
+		let r_id = derive_resource_id(converted_chain_id_bytes, &para_a_tree_id.encode());
+		src_chain_id_a = converted_chain_id_bytes;
+		assert_ok!(XAnchor::force_register_resource_id(Origin::root(), r_id, para_b_tree_id));
+	});
+
+	ParaB::execute_with(|| {
+		let converted_chain_id_bytes =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_A));
+		let r_id = derive_resource_id(converted_chain_id_bytes, &para_b_tree_id.encode());
+		src_chain_id_b = converted_chain_id_bytes.clone();
+		assert_ok!(XAnchor::force_register_resource_id(Origin::root(), r_id, para_a_tree_id));
+	});
+
+	let recipient_account_id = account::<AccountId>("", 2, SEED);
+	let relayer_account_id = account::<AccountId>("", 0, SEED);
+	let fee_value = 0;
+	let refund_value = 0;
+
+	let recipient_element = Element::from_bytes(&truncate_and_pad(&recipient_account_id.encode()[..]));
+	let relayer_element = Element::from_bytes(&truncate_and_pad(&relayer_account_id.encode()[..]));
+	let commitment_element = Element::from_bytes(&vec![0u8; 32]);
+
+	let src_chain_id = src_chain_id_a.clone();
+
+	let (secret, nullifier, leaf, nullifier_hash) = setup_leaf(Curve::Bn254, src_chain_id.into());
+
+	let mut root_elements = [Element::zero(); M];
+
+	// Perform deposit on ParaA
+	ParaA::execute_with(|| {
+		// check the balance before the deposit.
+		let balance_before = Balances::free_balance(sender_account_id.clone());
+		// and we do the deposit
+		assert_ok!(Anchor::deposit_and_update_linked_anchors(
+			Origin::signed(sender_account_id.clone()),
+			para_a_tree_id,
+			leaf
+		));
+		// now we check the balance after the deposit.
+		let balance_after = Balances::free_balance(sender_account_id.clone());
+		// the balance should be less now with `deposit_size`
+		assert_eq!(balance_after, balance_before - DEPOSIT_SIZE);
+		// now we need also to check if the state got updated.
+		let tree = MerkleTree::trees(para_a_tree_id).unwrap();
+		assert_eq!(tree.leaf_count, 1);
+		// set up what is needed to perform deposit on paraA and withdrawal on paraB
+		root_elements[1] = tree.root;
+	});
+
+	// Perform withdrawal on ParaB
+	ParaB::execute_with(|| {
+		let converted_chain_id_bytes =
+			compute_chain_id_with_internal_type::<Runtime, _>(u64::from(PARAID_A));
+		dbg!(converted_chain_id_bytes);
+		let edge = LinkableTree::edge_list(&para_b_tree_id, converted_chain_id_bytes);
+		// Sanity check - the neighbor root should match `ParaA`'s merkle tree root.
+		assert_eq!(edge.root, root_elements[1]);
+		assert_eq!(edge.latest_leaf_index, 1);
+
+		// Set the first element of `roots` set to be the merkle tree root on `ParaB`.
+		let tree_root = MerkleTree::get_root(para_b_tree_id).unwrap();
+		root_elements[0] = tree_root;
+
+		println!("chain_id: {:?}", src_chain_id.encode());
+		println!("nullifier_hash: {:?}", nullifier_hash);
+		println!("roots: {:?}", root_elements);
+		println!("recipient_bytes: {:?}", recipient_element);
+		println!("relayer_bytes: {:?}", relayer_element);
+		println!("fee_bytes: {:?}", fee_value);
+		println!("refund_bytes: {:?}", refund_value);
+		let proof_bytes = setup_zk_circuit(Curve::Bn254, src_chain_id.into(), secret, nullifier, vec![leaf], 0, root_elements, recipient_element, relayer_element, commitment_element, fee_value, refund_value, pk_bytes);
+
+		let balance_before = Balances::free_balance(recipient_account_id.clone());
+		// fire the call.
+		assert_ok!(Anchor::withdraw(
+			Origin::signed(sender_account_id),
+			para_b_tree_id,
+			proof_bytes,
+			root_elements.to_vec(),
+			nullifier_hash,
+			recipient_account_id.clone(),
+			relayer_account_id,
+			fee_value.into(),
+			refund_value.into(),
+			commitment_element,
+		));
+		// now we check the recipient balance again.
+		let balance_after = Balances::free_balance(recipient_account_id.clone());
+		assert_eq!(balance_after, balance_before + DEPOSIT_SIZE);
 	});
 }
