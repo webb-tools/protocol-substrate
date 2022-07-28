@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["CurrentNeighborRootIndex",""],["EdgeList",""],["LinkableTreeHasEdge",""],["MaxEdges",""],["NeighborRoots",""],["StorageApi",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["AnchorCreation","New tree created"],["Deposit","Amount has been deposited into the anchor"],["PostDeposit","Post deposit hook has executed successfully"],["Refresh","A transaction has been refreshed (one spent, another inserted)"],["Withdraw","Amount has been withdrawn from the anchor"]]};

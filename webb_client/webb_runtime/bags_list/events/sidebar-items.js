@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Rebagged","Moved an account from one bag to another."]]};

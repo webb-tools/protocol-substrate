@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ChainNonces",""],["Maintainer",""],["MaintainerNonce",""],["ProposalNonce",""],["Resources",""],["StorageApi",""]]};

@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["pallet_linkable_tree"] = [{"text":"impl&lt;T:&nbsp;<a class=\"trait\" href=\"pallet_linkable_tree/pallet/trait.Config.html\" title=\"trait pallet_linkable_tree::pallet::Config\">Config</a>&lt;I&gt;, I:&nbsp;'static&gt; <a class=\"trait\" href=\"webb_primitives/traits/linkable_tree/trait.LinkableTreeConfig.html\" title=\"trait webb_primitives::traits::linkable_tree::LinkableTreeConfig\">LinkableTreeConfig</a> for <a class=\"struct\" href=\"pallet_linkable_tree/struct.LinkableTreeConfigration.html\" title=\"struct pallet_linkable_tree::LinkableTreeConfigration\">LinkableTreeConfigration</a>&lt;T, I&gt;","synthetic":false,"types":["pallet_linkable_tree::LinkableTreeConfigration"]}];
+implementors["webb_standalone_runtime"] = [];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["CachedRoots",""],["DefaultHashes",""],["Deposit",""],["Leaves",""],["NextLeafIndex",""],["NextRootIndex",""],["NextTreeId",""],["StorageApi",""],["Trees",""]]};

@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["webb_standalone_runtime"] = [{"text":"impl NposSolution for <a class=\"struct\" href=\"webb_standalone_runtime/struct.NposSolution16.html\" title=\"struct webb_standalone_runtime::NposSolution16\">NposSolution16</a>","synthetic":false,"types":["webb_standalone_runtime::NposSolution16"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

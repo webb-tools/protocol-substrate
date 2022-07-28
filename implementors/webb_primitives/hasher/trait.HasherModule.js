@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["pallet_hasher"] = [{"text":"impl&lt;T:&nbsp;<a class=\"trait\" href=\"pallet_hasher/pallet/trait.Config.html\" title=\"trait pallet_hasher::pallet::Config\">Config</a>&lt;I&gt;, I:&nbsp;'static&gt; <a class=\"trait\" href=\"webb_primitives/hasher/trait.HasherModule.html\" title=\"trait webb_primitives::hasher::HasherModule\">HasherModule</a> for <a class=\"struct\" href=\"pallet_hasher/pallet/struct.Pallet.html\" title=\"struct pallet_hasher::pallet::Pallet\">Pallet</a>&lt;T, I&gt;","synthetic":false,"types":["pallet_hasher::pallet::Pallet"]}];
+implementors["webb_standalone_runtime"] = [];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

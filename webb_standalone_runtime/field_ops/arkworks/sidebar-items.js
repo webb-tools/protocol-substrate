@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ArkworksIntoField",""]],"trait":[["IntoPrimeField",""]],"type":[["ArkworksIntoFieldBls381",""],["ArkworksIntoFieldBn254",""]]};

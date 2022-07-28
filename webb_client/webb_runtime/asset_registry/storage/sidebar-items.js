@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["AssetIds",""],["AssetLocations",""],["AssetMetadataMap",""],["Assets",""],["LocationAssets",""],["NextAssetId",""],["StorageApi",""]]};

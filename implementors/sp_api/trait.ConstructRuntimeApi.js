@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["webb_standalone_runtime"] = [{"text":"impl&lt;Block:&nbsp;BlockT, C&gt; ConstructRuntimeApi&lt;Block, C&gt; for <a class=\"struct\" href=\"webb_standalone_runtime/struct.RuntimeApi.html\" title=\"struct webb_standalone_runtime::RuntimeApi\">RuntimeApi</a> <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;C: CallApiAt&lt;Block&gt; + 'static,&nbsp;</span>","synthetic":false,"types":["webb_standalone_runtime::RuntimeApi"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

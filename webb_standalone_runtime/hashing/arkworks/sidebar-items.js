@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["ArkworksPoseidonHasher",""]],"type":[["ArkworksPoseidonHasherBls381",""],["ArkworksPoseidonHasherBn254",""]]};

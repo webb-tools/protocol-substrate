@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["verify_groth16",""]],"mod":[["arkworks",""]],"struct":[["ArkworksVerifierGroth16",""]],"type":[["ArkworksVerifierBls381",""],["ArkworksVerifierBn254",""]]};

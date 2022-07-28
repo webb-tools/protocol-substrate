@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["webb_standalone_node"] = [{"text":"impl NativeExecutionDispatch for <a class=\"struct\" href=\"webb_standalone_node/service/struct.ExecutorDispatch.html\" title=\"struct webb_standalone_node::service::ExecutorDispatch\">ExecutorDispatch</a>","synthetic":false,"types":["webb_standalone_node::service::ExecutorDispatch"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

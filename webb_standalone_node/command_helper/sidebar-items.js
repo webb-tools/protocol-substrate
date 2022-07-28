@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["inherent_benchmark_data","Generates inherent data for the `benchmark overhead` command."]],"struct":[["BenchmarkExtrinsicBuilder","Generates extrinsics for the `benchmark overhead` command."]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Account",""],["Locks",""],["Reserves",""],["StorageApi",""],["StorageVersion",""],["TotalIssuance",""]]};

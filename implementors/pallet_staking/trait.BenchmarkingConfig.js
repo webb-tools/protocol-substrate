@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["webb_standalone_runtime"] = [{"text":"impl BenchmarkingConfig for <a class=\"struct\" href=\"webb_standalone_runtime/struct.StakingBenchmarkingConfig.html\" title=\"struct webb_standalone_runtime::StakingBenchmarkingConfig\">StakingBenchmarkingConfig</a>","synthetic":false,"types":["webb_standalone_runtime::StakingBenchmarkingConfig"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["AnchorUpdateProposal","Anchor Update Proposal."],["ResourceIdUpdateProposal","Resource Id Update Proposal."],["TokenAddProposal","Token Add Proposal."],["TokenRemoveProposal","Token Remove Proposal."],["WrappingFeeUpdateProposal","Wrapping Fee Update Proposal."]]};

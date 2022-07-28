@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["pallet_bridge_registry"] = [{"text":"impl&lt;T:&nbsp;<a class=\"trait\" href=\"pallet_bridge_registry/pallet/trait.Config.html\" title=\"trait pallet_bridge_registry::pallet::Config\">Config</a>&lt;I&gt;, I:&nbsp;'static&gt; OnSignedProposal&lt;DispatchError&gt; for <a class=\"struct\" href=\"pallet_bridge_registry/pallet/struct.Pallet.html\" title=\"struct pallet_bridge_registry::pallet::Pallet\">Pallet</a>&lt;T, I&gt;","synthetic":false,"types":["pallet_bridge_registry::pallet::Pallet"]}];
+implementors["webb_standalone_runtime"] = [];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

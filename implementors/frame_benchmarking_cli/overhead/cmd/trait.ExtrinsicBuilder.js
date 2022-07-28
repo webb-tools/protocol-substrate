@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["webb_standalone_node"] = [{"text":"impl ExtrinsicBuilder for <a class=\"struct\" href=\"webb_standalone_node/command_helper/struct.BenchmarkExtrinsicBuilder.html\" title=\"struct webb_standalone_node::command_helper::BenchmarkExtrinsicBuilder\">BenchmarkExtrinsicBuilder</a>","synthetic":false,"types":["webb_standalone_node::command_helper::BenchmarkExtrinsicBuilder"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
